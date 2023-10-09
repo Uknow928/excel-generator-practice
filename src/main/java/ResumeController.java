@@ -38,6 +38,47 @@ public class ResumeController {
 
     public void createResumeSheet(PersonInfo personInfo, List<Education> educationList, List<Career> careerList) throws IOException {
         Sheet sheet = workbook.createSheet("이력서");
+        createPersonInfoResume(sheet, personInfo);
+        createEducationResume(sheet, educationList);
+        createCareerResume(sheet, careerList);
+
+    }
+
+    private void createCareerResume(Sheet sheet, List<Career> careerList) {
+        int rowNum = sheet.getLastRowNum();
+        Row careerHeaderRow = sheet.createRow(++rowNum);
+        careerHeaderRow.createCell(0).setCellValue("근무기간");
+        careerHeaderRow.createCell(1).setCellValue("근무처");
+        careerHeaderRow.createCell(2).setCellValue("담당업무");
+        careerHeaderRow.createCell(3).setCellValue("근속연수");
+
+        for (Career career : careerList) {
+            Row careerRow = sheet.createRow(++rowNum);
+            careerRow.createCell(0).setCellValue(career.getWorkPeriod());
+            careerRow.createCell(1).setCellValue(career.getCompanyName());
+            careerRow.createCell(2).setCellValue(career.getJobTitle());
+            careerRow.createCell(3).setCellValue(career.getEmploymentYears());
+        }
+    }
+
+    private void createEducationResume(Sheet sheet, List<Education> educationList) {
+        Row eduHeaderRow = sheet.createRow(2);
+        eduHeaderRow.createCell(0).setCellValue("졸업년도");
+        eduHeaderRow.createCell(1).setCellValue("학교명");
+        eduHeaderRow.createCell(2).setCellValue("전공");
+        eduHeaderRow.createCell(3).setCellValue("졸업여부");
+
+        int rowNum = 2;
+        for (Education education : educationList) {
+            Row eduRow = sheet.createRow(++rowNum);
+            eduRow.createCell(0).setCellValue(education.getGraduationYear());
+            eduRow.createCell(1).setCellValue(education.getSchoolName());
+            eduRow.createCell(2).setCellValue(education.getMajor());
+            eduRow.createCell(3).setCellValue(education.getGraduationStatus());
+        }
+    }
+
+    private void createPersonInfoResume(Sheet sheet, PersonInfo personInfo) {
 
         Row headerRow = sheet.createRow(0);
         headerRow.createCell(0).setCellValue("사진");
@@ -57,33 +98,6 @@ public class ResumeController {
         row.createCell(3).setCellValue(personInfo.getAddress());
         row.createCell(4).setCellValue(personInfo.getPhoneNumber());
         row.createCell(5).setCellValue(personInfo.getBirthDate());
-
-        Row eduHeaderRow = sheet.createRow(2);
-        eduHeaderRow.createCell(0).setCellValue("졸업년도");
-        eduHeaderRow.createCell(1).setCellValue("학교명");
-        eduHeaderRow.createCell(2).setCellValue("전공");
-        eduHeaderRow.createCell(3).setCellValue("졸업여부");
-        int rowNum = 2;
-        for (Education education : educationList) {
-            Row eduRow = sheet.createRow(++rowNum);
-            eduRow.createCell(0).setCellValue(education.getGraduationYear());
-            eduRow.createCell(1).setCellValue(education.getSchoolName());
-            eduRow.createCell(2).setCellValue(education.getMajor());
-            eduRow.createCell(3).setCellValue(education.getGraduationStatus());
-        }
-
-        Row careerHeaderRow = sheet.createRow(++rowNum);
-        careerHeaderRow.createCell(0).setCellValue("근무기간");
-        careerHeaderRow.createCell(1).setCellValue("근무처");
-        careerHeaderRow.createCell(2).setCellValue("담당업무");
-        careerHeaderRow.createCell(3).setCellValue("근속연수");
-        for (Career career : careerList) {
-            Row careerRow = sheet.createRow(++rowNum);
-            careerRow.createCell(0).setCellValue(career.getWorkPeriod());
-            careerRow.createCell(1).setCellValue(career.getCompanyName());
-            careerRow.createCell(2).setCellValue(career.getJobTitle());
-            careerRow.createCell(3).setCellValue(career.getEmploymentYears());
-        }
     }
 
     private void addPicture(String photoFileName, Row row, Sheet sheet) {
@@ -117,7 +131,6 @@ public class ResumeController {
         }
 
     }
-
 
     public void createSelfIntroductionSheet(String selfIntroduction){
         Sheet sheet = workbook.createSheet("자기소개서");
