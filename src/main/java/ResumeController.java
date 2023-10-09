@@ -1,8 +1,14 @@
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
+import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.List;
 
@@ -42,8 +48,9 @@ public class ResumeController {
         headerRow.createCell(5).setCellValue("생년월일");
 
         Row row = sheet.createRow( 1);
-//        Todo 사진 파일 불러오기 기능
-        row.createCell(0).setCellValue(personInfo.getPhoto());
+
+        String photoFileName = personInfo.getPhoto();
+        addPicture(photoFileName, row, sheet);
 
         row.createCell(1).setCellValue(personInfo.getName());
         row.createCell(2).setCellValue(personInfo.getEmail());
@@ -79,16 +86,52 @@ public class ResumeController {
         }
     }
 
+    private void addPicture(String photoFileName, Row row, Sheet sheet) {
+
+        try (FileInputStream photoStream = new FileInputStream(photoFileName)){
+            BufferedImage originalImage = ImageIO.read(photoStream);
+
+            int newWidth = (int) (35 * 2.83465);
+            int newHeight = (int) (45 * 2.83465);
+            Image resizedImage = originalImage.getScaledInstance(newWidth,newHeight, Image.SCALE_SMOOTH);
+            BufferedImage resizedBufferedImage = new BufferedImage(newWidth , newHeight , BufferedImage.TYPE_4BYTE_ABGR);
+            Graphics2D g2d = resizedBufferedImage.createGraphics();
+            g2d.drawImage(resizedImage , 0, 0, null);
+            g2d.dispose();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(resizedBufferedImage,"png", baos);
+            byte[] imageBytes = baos.toByteArray();
+            int imageIndex = workbook.addPicture(imageBytes, workbook.PICTURE_TYPE_PNG);
+
+            XSSFDrawing drawing = (XSSFDrawing)sheet.createDrawingPatriarch();
+            XSSFClientAnchor anchor = new XSSFClientAnchor(0,0,0,0,0,1,1,2);
+            drawing.createPicture(anchor, imageIndex);
+
+            row.setHeightInPoints(newHeight*72/96);
+
+            int columnWidth = (int) Math.floor(((float) newWidth / (float) 8) * 256);
+            sheet.setColumnWidth(0,columnWidth);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     public void createSelfIntroductionSheet(String selfIntroduction){
         Sheet sheet = workbook.createSheet("자기소개서");
         Row row = sheet.createRow(0);
-        row.createCell(0).setCellValue(selfIntroduction);
+        Cell cell = row.createCell(0);
+        cell.setCellStyle(getWrapCellStyle());
+        cell.setCellValue(selfIntroduction);
+        sheet.autoSizeColumn(0);
     }
 
     public CellStyle getWrapCellStyle(){
-        //Todo
-        return null;
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setWrapText(true);
+        return cellStyle;
     }
 
     public void saveWorkbookToFile() {
