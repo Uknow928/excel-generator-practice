@@ -1,3 +1,9 @@
+package view;
+
+import model.Career;
+import model.Education;
+import model.PersonInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;

@@ -1,3 +1,8 @@
+package controller;
+
+import model.Career;
+import model.Education;
+import model.PersonInfo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -5,6 +10,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import view.ResumeView;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

@@ -1,3 +1,5 @@
+package model;
+
 public class Career {
     private String workPeriod;
     private String companyName;
